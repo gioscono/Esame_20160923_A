@@ -1,6 +1,7 @@
 package it.polito.tdp.gestionale;
 
 import java.net.URL;
+import java.util.List;
 import java.util.ResourceBundle;
 
 import it.polito.tdp.gestionale.model.Model;
@@ -28,7 +29,14 @@ public class DidatticaGestionaleController {
 	@FXML
 	void doCorsiFrequentati(ActionEvent event) {
 		txtResult.clear();
-		txtResult.setText("premuto Corsi Frequentati");
+		//txtResult.setText("premuto Corsi Frequentati");
+		
+		model.generaGrafo();
+		List<Integer> risultato = model.getStatCorsi();
+		txtResult.appendText("STATISTICHE ISCRITTI CORSI:\n");
+		for(int i = 0; i<risultato.size(); i++){
+			txtResult.appendText(String.format("Studenti iscritti a %d corsi: %d\n", i, risultato.get(i)));
+		}
 	}
 	
 	@FXML
