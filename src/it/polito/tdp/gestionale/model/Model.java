@@ -2,8 +2,10 @@ package it.polito.tdp.gestionale.model;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.jgrapht.Graphs;
 import org.jgrapht.graph.DefaultEdge;
@@ -19,6 +21,7 @@ public class Model {
 
 	private SimpleGraph<Nodo, DefaultEdge> grafo;
 	private Map<Integer, Studente> mappaStudenti;
+	private List<Corso> finale = new ArrayList<Corso>();
 	
 	public Model() {
 		didatticaDAO = new DidatticaDAO();
@@ -90,6 +93,56 @@ public class Model {
 			
 		return statCorsi;
 	}
+	
+	public List<Corso> trovaNumeroMinimoCorsi(){
+		this.generaGrafo();
+		List<Integer> stud = this.getStatCorsi();
+		int numeroPersoneDaRaggiungere = 0;
+		for(int i = 1 ; i<stud.size(); i++){
+			numeroPersoneDaRaggiungere += stud.get(i);
+		}
+		int step = 0;
+		List<Corso> parziale = new ArrayList<Corso>();
+		Set<Studente> studentiRaggiunti = new HashSet<Studente>();
+		this.recursive(parziale, numeroPersoneDaRaggiungere, studentiRaggiunti, step);
+		
+		return finale;
+	}
+
+	private void recursive(List<Corso> parziale, int numeroPersoneDaRaggiungere, Set<Studente> studentiRaggiunti, int step) {
+		
+		if(studentiRaggiunti.size() == numeroPersoneDaRaggiungere){
+			if(finale.size()>parziale.size()){
+				finale.clear();
+				finale.addAll(parziale);
+				return;
+			}
+		}
+		for(Corso c : corsi){
+			if(!parziale.contains(c) && c.getStudenti().size()>200){
+				parziale.add(c);
+				
+				System.out.println(parziale);
+				
+				List<Studente> studenti = c.getStudenti();
+				studentiRaggiunti.addAll(studenti);
+				recursive(parziale, numeroPersoneDaRaggiungere, studentiRaggiunti, step+1);
+				
+				parziale.remove(c);
+				parziale.removeAll(studenti);
+			}
+		}
+		
+		
+		
+	}
+	
+	
+	
+	
+	
+	
+	
 	
 	
 }
