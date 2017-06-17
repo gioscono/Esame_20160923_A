@@ -2,6 +2,7 @@ package it.polito.tdp.gestionale.model;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
@@ -89,6 +90,54 @@ public class Model {
 		}
 			
 		return statCorsi;
+	}
+	
+
+	public List<Corso> findMinimalSet(){
+		
+		List<Corso> parziale = new ArrayList<Corso>();
+		List<Corso> migliore = new ArrayList<Corso>();
+		
+		//non è necessario usare il PASSO perchè l'algoritmo ricorsivo termina quando ha finito di generare tutte le
+		//possibili combinazioni
+		recursive(parziale, migliore);
+		
+		return migliore;
+	}
+
+	public void recursive(List<Corso> parziale, List<Corso> migliore) {
+		
+		//System.out.println(parziale);
+		
+		HashSet<Studente> hashSetStudenti = new HashSet<Studente>(this.getTuttiStudenti());
+		for(Corso corso : parziale){
+			hashSetStudenti.removeAll(corso.getStudenti());
+		}
+		if(hashSetStudenti.isEmpty()){
+			//confronto con la migliore
+			if(migliore.isEmpty()){
+				migliore.addAll(parziale);
+			}
+			if(parziale.size()<migliore.size()){
+				migliore.clear();
+				migliore.addAll(parziale);
+			}
+		}
+		
+		
+		//creo una soluzione parziale
+		for(Corso corso : this.getTuttiCorsi()){
+			//CONDIZIONI PER DIRE QUANDO POSSO AGGIUNGERE UN CORSO
+			//il secondo controllo verifica l'id dei corsi, solo se è successivo si può inserire
+			if(parziale.isEmpty()  ||  corso.compareTo(parziale.get(parziale.size()-1))>0){
+				parziale.add(corso);
+				
+				recursive(parziale, migliore);
+				
+				parziale.remove(corso);
+			}
+		}
+		
 	}
 	
 	
